@@ -1,4 +1,5 @@
 import os
+import logging
 
 from models import *
 from controllers import *
@@ -12,6 +13,7 @@ text — Текст для заголовка (type str). (Обязательн�
 def print_header(text : str):
     os.system('cls')
     print('\033[92m{}\033[0m'.format(text.upper() + '\n'))
+    logging.info(text)
 
 '''
 Выводит шахматную доску.
@@ -54,6 +56,7 @@ def print_chess_board(*figures : Figure):
     for i in range(8):
         print(get_bold_font(__get_chr_vertical(i)), end='  ')
     print('\n')
+    logging.info('Отрисована шахматная доска')
 
 '''
 Выводит являются поля фигур полями одного цвета или нет.
@@ -64,11 +67,10 @@ figure2 — Вторая фигура (type Figure).  (Обязательный)
 '''
 def print_color_equality(figure1 : Figure, figure2 : Figure):
     is_same = get_color_equality(figure1, figure2)
-
-    if is_same:
-        print('а) Поля фигур имеют одинаковый цвет.')
-    else:
-        print('а) Поля фигур имеют разный цвет.')
+    word_same = 'одинаковый' if is_same else 'разный' 
+    msg = f'а) Поля фигур имеют {word_same} цвет.'
+    print(msg)
+    logging.info(msg)
 
 '''
 Выводит истинность угрозы figure1 для figure2.
@@ -80,9 +82,11 @@ figure2 — Вторая фигура (type Figure).  (Обязательный)
 def print_danger(figure1 : Figure, figure2 : Figure):
     isDanger = get_danger(figure1, figure2)
 
-    negation = '' if isDanger else ' не'
-    print(f'б) Фигура на клетке {__get_coordinates(figure1)}' + negation +
-                 f' угрожает фигуре на клетке {__get_coordinates(figure2)}.')
+    word_negation = '' if isDanger else ' не'
+    msg = f'б) Фигура на клетке {__get_coordinates(figure1)}{word_negation}' + \
+                 f' угрожает фигуре на клетке {__get_coordinates(figure2)}.'
+    print(msg)
+    logging.info(msg)
 
 '''
 Выводит координаты клетки для сруба за два хода, если она существует.
@@ -93,27 +97,33 @@ figure2 — Вторая фигура (type Figure).  (Обязательный)
 '''
 def print_move_to_kill(figure1 : Figure, figure2 : Figure):
     if get_danger(figure1, figure2):
-        print(f'в) Фигура на клетке {__get_coordinates(figure1)} может ' +
-              f'срубить фигуру на клетке {__get_coordinates(figure1)} за один ход.')
+        msg = f'в) Фигура на клетке {__get_coordinates(figure1)} может ' + \
+              f'срубить фигуру на клетке {__get_coordinates(figure1)} за один ход.'
+        print(msg)
+        logging.info(msg)
         return
 
     coordinates = get_move_to_kill(figure1, figure2)
 
     if coordinates == None:
-        print(f'в) Фигура на клетке {__get_coordinates(figure1)} не может ' +
-              f'срубить фигуру на клетке {__get_coordinates(figure1)} за два хода.')
+        msg = f'в) Фигура на клетке {__get_coordinates(figure1)} не может ' + \
+              f'срубить фигуру на клетке {__get_coordinates(figure1)} за два хода.'
+        print(msg)
+        logging.info(msg)
         return
 
     plural = 'данную клетку' if len(coordinates) == 1 else 'данные клетки'
-    print(f'в) Фигура на клетке {__get_coordinates(figure1)} может ' +
-          f'срубить фигуру на клетке {__get_coordinates(figure1)} за два хода ' +
-          f'через {plural}:', end=' ')
+    msg = f'в) Фигура на клетке {__get_coordinates(figure1)} может ' + \
+          f'срубить фигуру на клетке {__get_coordinates(figure1)} за два хода ' + \
+          f'через {plural}: '
     coordinates = list(__get_iter_coordinates(coordinates))
     for i in range(len(coordinates)):
         if i == len(coordinates) - 1:
-            print(coordinates[i], end='.\n')
+            msg += coordinates[i] + '.'
         else:
-            print(coordinates[i], end=', ')
+            msg += coordinates[i] + ', '
+    print(msg)
+    logging.info(msg)
 
 '''
 Переводит из числа вертикали в символьный формат.

@@ -1,9 +1,13 @@
+import logging
+
 from models import *
 from input import *
 from views import *
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, filename="log_file.log", filemode="a",
+                        format="%(asctime)s %(levelname)s %(message)s")
     isExit = 'y'
 
     while isExit in ('y', 'д'):
